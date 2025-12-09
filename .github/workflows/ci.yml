@@ -1,0 +1,30 @@
+name: CI Articles App
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '7.4'
+        extensions: mbstring, intl, pdo, pdo_mysql
+        coverage: xdebug
+
+    - name: Install Dependencies
+      run: composer install --prefer-dist --no-progress
+
+    - name: Run PHP CodeSniffer
+      run: vendor/bin/phpcs --standard=PSR12 app/ -n
+
+    - name: Run Unit Tests
+      run: vendor/bin/phpunit
