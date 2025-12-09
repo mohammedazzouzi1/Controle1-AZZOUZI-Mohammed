@@ -3,24 +3,39 @@ name: CI Articles App
 on: [push, pull_request]
 
 jobs:
-  build-and-test:
+  code-quality:
+    name: Code Quality (PHPCS)
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '7.4'
-        extensions: mbstring, intl, pdo, pdo_mysql
-        coverage: xdebug
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          extensions: mbstring, intl, pdo, pdo_mysql
 
-    - name: Install Dependencies
-      run: composer install --prefer-dist --no-progress
+      - name: Install Dependencies
+        run: composer install --prefer-dist --no-progress
 
-    - name: Run PHP CodeSniffer
-      run: vendor/bin/phpcs --standard=PSR12 app/ -n
+      - name: Run PHP CodeSniffer
+        run: vendor/bin/phpcs --standard=PSR12 app/ -n
 
-    - name: Run Unit Tests
-      run: vendor/bin/phpunit
+  unit-tests:
+    name: Unit Tests (PHPUnit)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          extensions: mbstring, intl, pdo, pdo_mysql
+          coverage: xdebug
+
+      - name: Install Dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Run Unit Tests
+        run: vendor/bin/phpunit
